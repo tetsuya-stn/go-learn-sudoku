@@ -66,7 +66,19 @@ func verify(b Board) bool {
 		}
 	}
 	// 3x3マスのチェック
-	
+	for i := 0; i < 9; i += 3 {
+		for j := 0; j < 9; j += 3 {
+			var c [10]int // 数字(0~9)の出現回数を記録
+			for row := i; row < i+3; row++ {
+				for column := j; column < j+3; column++ {
+					c[b[row][column]]++
+				}
+			}
+			if duplicated(c) {
+				return false
+			}
+		}
+	}
 	return true
 }
 
