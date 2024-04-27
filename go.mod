@@ -1,3 +1,3 @@
-module main
+module sudoku
 
-go 1.22
+go 1.22.1
