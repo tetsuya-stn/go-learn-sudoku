@@ -82,17 +82,71 @@ func verify(b Board) bool {
 	return true
 }
 
-func main() {
-	b := Board{
-		{0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0},
+func solved(b Board) bool {
+	if !verify(b) {
+		return false
 	}
-	fmt.Printf("%v\n", printBoard(b))
+
+	for i := 0; i < 9; i++ {
+		for j := 0; j < 9; j++ {
+			if b[i][j] == 0 {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// backtrackは再帰で呼び出してBoardの中身を更新するため参照渡し
+func backtrack(b *Board) bool {
+	fmt.Printf("progress\n%v\n", printBoard(*b))
+	if solved(*b) {
+		return true
+	}
+	for i := 0; i < 9; i++ {
+		for j := 0; j < 9; j++ {
+			if b[i][j] == 0 {
+				for c := 9; c > 0; c-- {
+					b[i][j] = c
+					if verify(*b) {
+						// もし埋めた数字がチェックをクリアしたら、さらに深く探索
+						if backtrack(b) {
+							return true
+						}
+					}
+					b[i][j] = 0
+				}
+				return false
+			}
+		}
+	}
+	return false
+}
+
+func main() {
+	// b := Board{
+	// 	{0, 0, 0, 0, 0, 0, 0, 0, 0},
+	// 	{0, 0, 0, 0, 0, 0, 0, 0, 0},
+	// 	{0, 0, 0, 0, 0, 0, 0, 0, 0},
+	// 	{0, 0, 0, 0, 0, 0, 0, 0, 0},
+	// 	{0, 0, 0, 0, 0, 0, 0, 0, 0},
+	// 	{0, 0, 0, 0, 0, 0, 0, 0, 0},
+	// 	{0, 0, 0, 0, 0, 0, 0, 0, 0},
+	// 	{0, 0, 0, 0, 0, 0, 0, 0, 0},
+	// 	{0, 0, 0, 0, 0, 0, 0, 0, 0},
+	// }
+	b := Board{
+		{0, 5, 0, 0, 8, 3, 0, 1, 7},
+		{0, 0, 0, 1, 0, 0, 4, 0, 0},
+		{3, 0, 4, 0, 0, 5, 6, 0, 8},
+		{0, 0, 0, 0, 3, 0, 0, 0, 9},
+		{0, 9, 0, 8, 2, 4, 5, 0, 0},
+		{0, 0, 6, 0, 0, 0, 0, 7, 0},
+		{0, 0, 9, 0, 0, 0, 0, 5, 0},
+		{0, 0, 7, 2, 9, 0, 0, 8, 6},
+		{1, 0, 3, 6, 0, 7, 2, 0, 4},
+	}
+	fmt.Printf("before\n%v\n", printBoard(b))
+	backtrack(&b)
+	fmt.Printf("after\n%v\n", printBoard(b))
 }
