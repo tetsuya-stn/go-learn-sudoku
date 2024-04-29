@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 // Boardは数独の9x9のマスを示す
@@ -97,9 +99,9 @@ func solved(b Board) bool {
 	return true
 }
 
-// backtrackは再帰で呼び出してBoardの中身を更新するため参照渡し
-func backtrack(b *Board) bool {
-	fmt.Printf("progress\n%v\n", printBoard(*b))
+// Backtrackは再帰で呼び出してBoardの中身を更新するため参照渡し
+func Backtrack(b *Board) bool {
+	// fmt.Printf("progress\n%v\n", printBoard(*b))
 	if solved(*b) {
 		return true
 	}
@@ -110,7 +112,7 @@ func backtrack(b *Board) bool {
 					b[i][j] = c
 					if verify(*b) {
 						// もし埋めた数字がチェックをクリアしたら、さらに深く探索
-						if backtrack(b) {
+						if Backtrack(b) {
 							return true
 						}
 					}
@@ -121,6 +123,31 @@ func backtrack(b *Board) bool {
 		}
 	}
 	return false
+}
+
+// input: 2.6.3......1.65.7..471.8.5.5......29..8.194.6...42...1....428..6.93....5.7.....13
+func makeBoard(input string) (*Board, error) {
+	s := bufio.NewScanner(strings.NewReader(input))
+	s.Split(bufio.ScanRunes)
+	var b Board
+	for i := 0; i < 9; i++ {
+		for j := 0; j < 9; j++ {
+			if !s.Scan() {
+				break
+			}
+			token := s.Text()
+			if token == "." {
+				b[i][j] = 0
+				continue
+			}
+			n, err := strconv.Atoi(token)
+			if err != nil {
+				return nil, fmt.Errorf("input couldn't convert to string")
+			}
+			b[i][j] = n
+		}
+	}
+	return &b, nil
 }
 
 func main() {
@@ -146,7 +173,8 @@ func main() {
 		{0, 0, 7, 2, 9, 0, 0, 8, 6},
 		{1, 0, 3, 6, 0, 7, 2, 0, 4},
 	}
-	fmt.Printf("before\n%v\n", printBoard(b))
-	backtrack(&b)
-	fmt.Printf("after\n%v\n", printBoard(b))
+	Backtrack(&b)
+	inputB, err := makeBoard("2.6.3......1.65.7..471.8.5.5......29..8.194.6...42...1....428..6.93....5.7.....13")
+	fmt.Println(err)
+	fmt.Printf("Board\n%v\n", printBoard(*inputB))
 }
